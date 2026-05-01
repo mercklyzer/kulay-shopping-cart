@@ -1,11 +1,11 @@
+
 # Kulay — Shopping Cart
 
 A React Native shopping cart app built with **Expo SDK 54**, submitted as my application to **Kulay**.
 
 ## Demo
 
-<!-- Replace with actual video URL -->
-[📹 Watch the demo video](https://YOUR_VIDEO_URL_HERE)
+https://github.com/user-attachments/assets/f99dd2d6-972d-4849-80ac-5e94dc4aaf17
 
 ## Features
 
