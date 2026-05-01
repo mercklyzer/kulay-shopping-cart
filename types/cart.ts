@@ -13,3 +13,12 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+export interface CartState {
+  items: CartItem[];
+}
+
+export type CartAction =
+  | { type: 'ADD'; product: Product }
+  | { type: 'DECREMENT'; entryId: string }
+  | { type: 'REMOVE'; entryId: string };

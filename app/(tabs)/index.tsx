@@ -10,12 +10,23 @@ import {
 import ProductCard from '@/components/product-card';
 import { PRIMARY } from '@/constants/theme';
 import { products } from '@/data/products';
+import { useCart } from '@/hooks/useCart';
 import type { Product } from '@/types/cart';
 
 export default function ShopScreen() {
-  const renderItem = ({ item }: ListRenderItemInfo<Product>) => (
-    <ProductCard product={item} />
-  );
+  const { items, count, dispatch } = useCart();
+
+  const renderItem = ({ item }: ListRenderItemInfo<Product>) => {
+    const cartItem = items.find((ci) => ci.product.id === item.id);
+    return (
+      <ProductCard
+        product={item}
+        quantity={cartItem?.quantity ?? 0}
+        onIncrement={() => dispatch({ type: 'ADD', product: item })}
+        onDecrement={() => dispatch({ type: 'DECREMENT', entryId: item.id })}
+      />
+    );
+  };
 
   const keyExtractor = (item: Product) => item.id;
 
@@ -25,8 +36,18 @@ export default function ShopScreen() {
         <Text className="text-2xl font-black tracking-tight text-gray-900">
           ku<Text style={{ color: PRIMARY }}>lay</Text>
         </Text>
-        <Pressable className="active:opacity-70">
+        <Pressable className="relative active:opacity-70">
           <Ionicons name="cart-outline" size={26} color="#111111" />
+          {count > 0 && (
+            <View
+              className="absolute -right-2 -top-2 h-5 w-5 items-center justify-center rounded-full"
+              style={{ backgroundColor: PRIMARY }}
+            >
+              <Text className="text-xs font-bold text-white">
+                {count > 99 ? '99+' : count}
+              </Text>
+            </View>
+          )}
         </Pressable>
       </View>
 

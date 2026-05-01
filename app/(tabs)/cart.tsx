@@ -10,14 +10,8 @@ import {
 
 import CartItemRow from '@/components/cart-item-row';
 import { PRIMARY } from '@/constants/theme';
-import { products } from '@/data/products';
+import { useCart } from '@/hooks/useCart';
 import type { CartItem } from '@/types/cart';
-
-// This will be removed later.
-const ITEMS: CartItem[] = [
-  { entryId: products[0].id, product: products[0], quantity: 2 },
-  { entryId: products[2].id, product: products[2], quantity: 1 },
-];
 
 const EmptyState = () => {
   const router = useRouter();
@@ -42,14 +36,31 @@ const EmptyState = () => {
   );
 };
 
-const renderItem = ({ item }: ListRenderItemInfo<CartItem>) => (
-  <CartItemRow item={item} />
-);
-
 const keyExtractor = (item: CartItem) => item.entryId;
 
+const CartList = () => {
+  const { items, dispatch } = useCart();
+  const renderItem = ({ item }: ListRenderItemInfo<CartItem>) => (
+    <CartItemRow
+      item={item}
+      onIncrement={() => dispatch({ type: 'ADD', product: item.product })}
+      onDecrement={() => dispatch({ type: 'DECREMENT', entryId: item.entryId })}
+      onRemove={() => dispatch({ type: 'REMOVE', entryId: item.entryId })}
+    />
+  );
+  return (
+    <FlatList
+      data={items}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      contentContainerStyle={{ paddingBottom: 24 }}
+      showsVerticalScrollIndicator={false}
+    />
+  );
+};
+
 export default function CartScreen() {
-  const count = ITEMS.length;
+  const { items, count } = useCart();
 
   return (
     <View className="flex-1 bg-white">
@@ -64,17 +75,7 @@ export default function CartScreen() {
         )}
       </View>
 
-      {ITEMS.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <FlatList
-          data={ITEMS}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      {items.length === 0 ? <EmptyState /> : <CartList />}
     </View>
   );
 }

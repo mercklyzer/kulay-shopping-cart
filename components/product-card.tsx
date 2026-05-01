@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, Text, View } from 'react-native';
 
@@ -6,9 +7,27 @@ import type { Product } from '@/types/cart';
 
 interface Props {
   product: Product;
+  quantity: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
 }
 
-const ProductCard = ({ product }: Props) => {
+const ProductCard = ({
+  product,
+  quantity,
+  onIncrement,
+  onDecrement,
+}: Props) => {
+  const handleIncrement = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onIncrement();
+  };
+
+  const handleDecrement = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onDecrement();
+  };
+
   return (
     <View
       className="mx-4 mb-4 overflow-hidden rounded-2xl bg-white shadow-sm"
@@ -38,14 +57,39 @@ const ProductCard = ({ product }: Props) => {
           <Text className="text-base font-bold text-gray-900">
             {currencyFormatter.format(product.price)}
           </Text>
-          <Pressable
-            className="rounded-xl px-4 py-2 active:opacity-70"
-            style={{ backgroundColor: product.buttonColor }}
-          >
-            <Text className="text-sm font-semibold text-white">
-              Add to Cart
-            </Text>
-          </Pressable>
+
+          {quantity === 0 ? (
+            <Pressable
+              className="rounded-xl px-4 py-2 active:opacity-70"
+              style={{ backgroundColor: product.buttonColor }}
+              onPress={handleIncrement}
+            >
+              <Text className="text-sm font-semibold text-white">
+                Add to Cart
+              </Text>
+            </Pressable>
+          ) : (
+            <View
+              className="flex-row items-center overflow-hidden rounded-xl"
+              style={{ backgroundColor: product.buttonColor }}
+            >
+              <Pressable
+                className="px-3 py-2 active:opacity-70"
+                onPress={handleDecrement}
+              >
+                <Text className="text-base font-bold text-white">−</Text>
+              </Pressable>
+              <Text className="min-w-[24px] text-center text-sm font-bold text-white">
+                {quantity}
+              </Text>
+              <Pressable
+                className="px-3 py-2 active:opacity-70"
+                onPress={handleIncrement}
+              >
+                <Text className="text-base font-bold text-white">+</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </View>
     </View>
