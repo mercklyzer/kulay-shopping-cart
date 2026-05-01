@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 
-import ProductCard from '@/components/product-card';
+import ProductCard from '@/components/shop/ProductCard';
 import { PRIMARY } from '@/constants/theme';
 import { products } from '@/data/products';
 import { useCart } from '@/hooks/useCart';
