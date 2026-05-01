@@ -1,11 +1,15 @@
-import { createContext, type ReactNode, useMemo, useReducer } from 'react';
+import { createContext, type ReactNode, useReducer } from 'react';
 
+import { VOUCHERS } from '@/data/vouchers';
 import type { CartAction, CartItem, CartState } from '@/types/cart';
 
 export interface CartContextValue {
   items: CartItem[];
   count: number;
   subtotal: number;
+  voucherCode: string;
+  isVoucherValid: boolean;
+  discountedTotal: number;
   dispatch: React.Dispatch<CartAction>;
 }
 
@@ -13,6 +17,7 @@ export const CartContext = createContext<CartContextValue | null>(null);
 
 const initialState: CartState = {
   items: [],
+  voucherCode: '', // apply only one voucher at a time for simplicity
 };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
@@ -59,6 +64,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         items: state.items.filter((i) => i.entryId !== action.entryId),
       };
+    case 'SET_VOUCHER':
+      return {
+        ...state,
+        voucherCode: action.code,
+      };
     default:
       return state;
   }
@@ -71,20 +81,28 @@ interface Props {
 export const CartProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  const count = useMemo(
-    () => state.items.reduce((sum, i) => sum + i.quantity, 0),
-    [state.items],
+  const count = state.items.reduce((sum, i) => sum + i.quantity, 0);
+  const subtotal = state.items.reduce(
+    (sum, i) => sum + i.product.price * i.quantity,
+    0,
   );
+  const matchedVoucher = VOUCHERS.find(
+    (v) => v.code === state.voucherCode.trim().toLowerCase(),
+  );
+  const isVoucherValid = matchedVoucher !== undefined;
+  const discountedTotal = matchedVoucher
+    ? subtotal * (1 - matchedVoucher.discount)
+    : subtotal;
 
-  const subtotal = useMemo(
-    () => state.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
-    [state.items],
-  );
-
-  const value = useMemo(
-    () => ({ items: state.items, count, subtotal, dispatch }),
-    [state.items, count, subtotal],
-  );
+  const value: CartContextValue = {
+    items: state.items,
+    count,
+    subtotal,
+    voucherCode: state.voucherCode,
+    isVoucherValid,
+    discountedTotal,
+    dispatch,
+  };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
