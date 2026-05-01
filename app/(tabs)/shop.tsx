@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import {
   FlatList,
   type ListRenderItemInfo,
@@ -17,6 +18,7 @@ import type { Product } from '@/types/cart';
 
 export default function ShopScreen() {
   const { items, count, dispatch } = useCart();
+  const router = useRouter();
 
   const renderItem = ({ item }: ListRenderItemInfo<Product>) => {
     const cartItem = items.find((ci) => ci.product.id === item.id);
@@ -34,11 +36,14 @@ export default function ShopScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 pb-4">
+      <View className="flex-row items-center justify-between px-4 pb-4 pt-4">
         <Text className="text-2xl font-black tracking-tight text-gray-900">
           ku<Text style={{ color: PRIMARY }}>lay</Text>
         </Text>
-        <Pressable className="relative active:opacity-70">
+        <Pressable
+          className="relative active:opacity-70"
+          onPress={() => router.push('/(tabs)/cart')}
+        >
           <Ionicons name="cart-outline" size={26} color="#111111" />
           {count > 0 && (
             <View
