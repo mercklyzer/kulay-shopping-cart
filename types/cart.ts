@@ -7,3 +7,9 @@ export interface Product {
   gradientColors: [string, string];
   buttonColor: string;
 }
+
+export interface CartItem {
+  entryId: string;
+  product: Product;
+  quantity: number;
+}

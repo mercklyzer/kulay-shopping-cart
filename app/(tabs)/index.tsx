@@ -1,5 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { FlatList, type ListRenderItemInfo, Pressable, Text, View } from 'react-native';
+import {
+  FlatList,
+  type ListRenderItemInfo,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 
 import ProductCard from '@/components/product-card';
 import { PRIMARY } from '@/constants/theme';
